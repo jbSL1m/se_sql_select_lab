@@ -11,22 +11,19 @@ conn = sqlite3.connect('data.sqlite')
 # STEP 2
 
 df_first_five = pd.read_sql("""
-SELECT *
-FROM products
-LIMIT 5;""", conn)
+SELECT employeeNumber, lastName
+FROM employees;""", conn)
 
 # STEP 3
 
 df_five_reverse = pd.read_sql("""
-SELECT *
-FROM employees
-ORDER BY lastName DESC, employeeNumber ASC
-LIMIT 5;""", conn)
+SELECT lastName, employeeNumber
+FROM employees;""", conn)
 
 # STEP 4
 
 df_alias = pd.read_sql("""
-SELECT employeeNumber AS ID, lastName, firstName, extension, email, officeCode, reportsTo, jobTitle
+SELECT lastName, employeeNumber AS ID
 FROM employees;""", conn)
 
 # STEP 5
@@ -54,11 +51,16 @@ FROM employees;""", conn)
 # STEP 8
 
 sum_total_price = pd.read_sql("""
-SELECT SUM(ROUND(priceEach * quantityOrdered)) AS total_amount
-FROM orderdetails;""", conn)
+SELECT ROUND(priceEach * quantityOrdered) AS total_price
+FROM orderDetails;""", conn).sum().reset_index(drop=True)
 
 # STEP 9
 
 df_day_month_year = pd.read_sql("""
-SELECT strftime('%d-%m-%Y', orderDate) AS day_month_year
+SELECT orderDate,
+       strftime('%d', orderDate) AS day,
+       strftime('%m', orderDate) AS month,
+       strftime('%Y', orderDate) AS year
 FROM orders;""", conn)
+
+conn.close()
